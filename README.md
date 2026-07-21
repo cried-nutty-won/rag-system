@@ -74,7 +74,7 @@ $REPO_DIR/fish/
 └── llme.sh                           # → start-llm-embed-qwen3-06b.sh &
 ```
 
-### GGUF Models
+### GGUF Models (exemple)
 
 ```
 $GGUF_DIR/
@@ -86,7 +86,7 @@ $GGUF_DIR/
 └── nomic-nofr/nomic-embed-text-v1.5.Q8_0.gguf  # legacy
 ```
 
-### Obsidian Vaults
+### Obsidian Vaults (exemple)
 
 ```
 $OBSIDIAN_DIR/
@@ -99,7 +99,7 @@ $OBSIDIAN_DIR/
 └── 006 telephone/                    # vault "telephone" — 218 chunks, max 3463 tokens
 ```
 
-### Embedding Cache
+### Embedding Cache (exemple)
 
 ```
 ~/.rag/
