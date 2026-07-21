@@ -29,10 +29,10 @@ User Query
 | 8184 | Reranker (cross-encoder) | Qwen3-Reranker-0.6B-Q4_K_M | `--reranking --pooling rank --embedding` |
 | 8182 | RAG Server (Python) | — | — |
 
-### Hardware
+### Hardware (exemple)
 
-- MacBook Pro M1 Pro, 10 cores (8P + 2E), 32 GB unified RAM
-- Void Linux Asahi, CPU only (`--n-gpu-layers 0`)
+- from 8 GB unified RAM
+- Linux CPU only (`--n-gpu-layers 0`)
 - llama.cpp custom build: `$LLAMA_CPP_BIN`
 
 ---
