@@ -3,16 +3,19 @@
 # Port 8184 | Les 3 flags sont OBLIGATOIRES : --reranking --pooling rank --embedding
 # Sans les 3 → "This server does not support reranking"
 
-export LD_LIBRARY_PATH=/home/ksoinan/llama-cpp-turboquant/build-cpu/bin:$LD_LIBRARY_PATH
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../config.sh"
+
+export LD_LIBRARY_PATH="$(dirname "$LLAMA_CPP_BIN"):$LD_LIBRARY_PATH"
 
 if command -v ss &> /dev/null && ss -tln | grep -q :8184; then
     echo "⚠️  Port 8184 déjà occupé. pkill -f Qwen3-Reranker"
     exit 1
 fi
 
-cd ~/llama-cpp-turboquant
-exec ./build-cpu/bin/llama-server \
-  -m /home/ksoinan/wijdha/library/GGUF/rag/Qwen3-Reranker-0.6B-Q4_K_M.gguf \
+cd "$(dirname "$LLAMA_CPP_BIN")/.."
+exec "$LLAMA_CPP_BIN" \
+  -m "${GGUF_DIR}/Qwen3-Reranker-0.6B-Q4_K_M.gguf" \
   --reranking \
   --pooling rank \
   --embedding \

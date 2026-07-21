@@ -46,34 +46,31 @@ def cache_path_for(base_cache_file, model_id):
     return f"{root}__{model_id}{ext}"
 
 
+import os
+
+OBSIDIAN_DIR = os.environ.get("OBSIDIAN_DIR", os.path.expanduser("~/obsidian"))
+
 VAULTS_CONFIG = {
     "void": {
-        "path": "/home/ksoinan/obsidian/001 Void 000",
-        "cache_file": os.path.join(CACHE_DIR, "void_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "001 Void 000"),
     },
     "linux": {
-        "path": "/home/ksoinan/obsidian/000 linux 000",
-        "cache_file": os.path.join(CACHE_DIR, "linux_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "000 linux 000"),
     },
     "browsing": {
-        "path": "/home/ksoinan/obsidian/002 browsing 000",
-        "cache_file": os.path.join(CACHE_DIR, "browsing_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "002 browsing 000"),
     },
     "terminal": {
-        "path": "/home/ksoinan/obsidian/003 Terminal 000",
-        "cache_file": os.path.join(CACHE_DIR, "terminal_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "003 Terminal 000"),
     },
     "llm": {
-        "path": "/home/ksoinan/obsidian/004 llm 000",
-        "cache_file": os.path.join(CACHE_DIR, "llm_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "004 llm 000"),
     },
     "images": {
-        "path": "/home/ksoinan/obsidian/005 images 000",
-        "cache_file": os.path.join(CACHE_DIR, "images_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "005 images 000"),
     },
     "telephone": {
-        "path": "/home/ksoinan/obsidian/006 telephone",
-        "cache_file": os.path.join(CACHE_DIR, "telephone_cache.json"),
+        "path": os.path.join(OBSIDIAN_DIR, "006 telephone"),
     },
 }
 
@@ -99,7 +96,7 @@ def is_embeddable(text):
         for line in lines
         if line.strip().startswith(
             (
-                "$", ">", "ksoinan@", "slot ", "srv ", "res ", "que ",
+                "$", ">", "slot ", "srv ", "res ", "que ",
                 "import ", "def ", "class ", "//", "/*", "{", "[",
             )
         )

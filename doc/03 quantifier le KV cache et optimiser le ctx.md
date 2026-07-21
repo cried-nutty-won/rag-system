@@ -54,7 +54,7 @@ Le q8_0 pour le KV cache est le sweet spot universel dans llama.cpp : moitié mo
 Reranker :
 ```bash
 exec ./build-cpu/bin/llama-server \
-  -m /home/ksoinan/wijdha/library/GGUF/rag/Qwen3-Reranker-0.6B-Q4_K_M.gguf \
+  -m $GGUF_DIR/Qwen3-Reranker-0.6B-Q4_K_M.gguf \
   --reranking \
   --pooling rank \
   --embedding \
@@ -72,7 +72,7 @@ exec ./build-cpu/bin/llama-server \
 Embedding :
 ```bash
 exec ./build-cpu/bin/llama-server \
-  -m /home/ksoinan/wijdha/library/GGUF/rag/Qwen3-Embedding-0.6B-Q8_0.gguf \
+  -m $GGUF_DIR/Qwen3-Embedding-0.6B-Q8_0.gguf \
   --embedding \
   --pooling last \
   -ub 8192 \

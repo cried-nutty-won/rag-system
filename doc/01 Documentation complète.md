@@ -33,7 +33,7 @@ Query utilisateur
 
 - MacBook Pro M1 Pro, 10 cœurs (8P + 2E), 32 Go RAM unifiée
 - Void Linux Asahi, CPU uniquement (`--n-gpu-layers 0`)
-- llama.cpp custom build : `/home/ksoinan/llama-cpp-turboquant/build-cpu/bin/llama-server`
+- llama.cpp custom build : `$LLAMA_CPP_BIN`
 
 ---
 
@@ -42,7 +42,7 @@ Query utilisateur
 - # Scripts de démarrage (llama.cpp)
 
 ```
-/home/ksoinan/scripts/llm/rag/
+$LLAMA_SCRIPTS_DIR/
 ├── start-llm-embed-qwen3-06b.sh      # Embedding 0.6B Q8_0 (port 8181) — ACTIF
 ├── start-llm-embed-qwen3-4b.sh       # Embedding 4B Q4_K_M (port 8181) — alternative
 ├── start-llm-embed-text-v1.5.sh      # Nomic v1.5 (port 8181) — legacy
@@ -55,7 +55,7 @@ Query utilisateur
 - # Serveur RAG et CLI
 
 ```
-/home/ksoinan/scripts/rag/
+$RAG_SCRIPTS_DIR/
 ├── rag_server_rerank.py              # Serveur RAG principal (port 8182)
 ├── search_vault.sh                   # Client CLI (appelé par les alias fish)
 └── test.sh                           # Script de mesure des tokens max par vault
@@ -64,7 +64,7 @@ Query utilisateur
 - # Wrappers fish
 
 ```
-/home/ksoinan/scripts/fish/rag/
+$REPO_DIR/fish/
 ├── rag.sh                            # → search_vault.sh (alias `rag` et `ragr`)
 ├── rc.sh                             # → rag curl des 3 ports 
 ├── rs.sh                             # → lance rag_server_rerank.py en background
@@ -78,7 +78,7 @@ Query utilisateur
 - # Modèles GGUF
 
 ```
-/home/ksoinan/wijdha/library/GGUF/rag/
+$GGUF_DIR/
 ├── Qwen3-Embedding-0.6B-Q8_0.gguf   # 610 Mo — embedding actif
 ├── Qwen3-Embedding-4B-Q4_K_M.gguf   # 2,4 Go — embedding alternatif
 ├── Qwen3-Reranker-0.6B-Q4_K_M.gguf  # 379 Mo — reranker actif
@@ -90,7 +90,7 @@ Query utilisateur
 - # Vaults Obsidian
 
 ```
-/home/ksoinan/obsidian/
+$OBSIDIAN_DIR/
 ├── 000 linux 000/                    # vault "linux"     — 59 chunks, max 422 tokens
 ├── 001 Void 000/                     # vault "void"      — 1377 chunks, max 9708 tokens
 ├── 002 browsing 000/                 # vault "browsing"  — 238 chunks, max 940 tokens
@@ -116,13 +116,13 @@ Query utilisateur
 - # Binaire llama.cpp
 
 ```
-/home/ksoinan/llama-cpp-turboquant/build-cpu/bin/llama-server
+$LLAMA_CPP_BIN
 ```
 
 - # Environnement Python
 
 ```
-/home/ksoinan/.venv/main/bin/python3
+$VENV_PYTHON
 ```
 
 ---
@@ -133,7 +133,7 @@ Query utilisateur
 
 ```bash
 #!/bin/bash
-export LD_LIBRARY_PATH=/home/ksoinan/llama-cpp-turboquant/build-cpu/bin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$(dirname "$LLAMA_CPP_BIN"):$LD_LIBRARY_PATH
 
 if command -v ss &> /dev/null && ss -tln | grep -q :8181; then
     echo "⚠️  Port 8181 déjà occupé. pkill -f Qwen3-Embedding"
@@ -142,7 +142,7 @@ fi
 
 cd ~/llama-cpp-turboquant
 exec ./build-cpu/bin/llama-server \
-  -m /home/ksoinan/wijdha/library/GGUF/rag/Qwen3-Embedding-0.6B-Q8_0.gguf \
+  -m $GGUF_DIR/Qwen3-Embedding-0.6B-Q8_0.gguf \
   --embedding \
   --pooling last \
   --n-gpu-layers 0 \
@@ -162,7 +162,7 @@ exec ./build-cpu/bin/llama-server \
 
 ```bash
 #!/bin/bash
-export LD_LIBRARY_PATH=/home/ksoinan/llama-cpp-turboquant/build-cpu/bin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$(dirname "$LLAMA_CPP_BIN"):$LD_LIBRARY_PATH
 
 if command -v ss &> /dev/null && ss -tln | grep -q :8184; then
     echo "⚠️  Port 8184 déjà occupé. pkill -f Qwen3-Reranker"
@@ -171,7 +171,7 @@ fi
 
 cd ~/llama-cpp-turboquant
 exec ./build-cpu/bin/llama-server \
-  -m /home/ksoinan/wijdha/library/GGUF/rag/Qwen3-Reranker-0.6B-Q4_K_M.gguf \
+  -m $GGUF_DIR/Qwen3-Reranker-0.6B-Q4_K_M.gguf \
   --reranking \
   --pooling rank \
   --embedding \
@@ -295,7 +295,7 @@ exec ./build-cpu/bin/llama-server \
   "results": [
     {
       "source": "fichier.md",
-      "path": "/home/ksoinan/obsidian/.../fichier.md",
+      "path": "$OBSIDIAN_DIR/.../fichier.md",
       "confidence": 99.9,
       "rerank_score": 0.9999,
       "semantic_score": 0.847,
@@ -464,7 +464,7 @@ Le pipeline suit l'architecture présentée dans "Hybrid Retrieval from Scratch"
 
 - # Prérequis
 
-- llama.cpp compilé (build CPU) : `/home/ksoinan/llama-cpp-turboquant/build-cpu/bin/llama-server`
+- llama.cpp compilé (build CPU) : `$LLAMA_CPP_BIN`
 - Python 3 avec venv : `~/.venv/main/`
 - Packages Python : `numpy`, `requests`, `rank_bm25`
 - Modèles GGUF téléchargés (Voodisss pour le reranker, Qwen officiel pour l'embedding)
@@ -495,7 +495,7 @@ curl -s http://127.0.0.1:8182/health | jq .
 1. Ajouter l'entrée dans `VAULTS_CONFIG` dans `rag_server_rerank.py` :
 ```python
 "docs": {
-    "path": "/home/ksoinan/wijdha/docs_techniques",
+    "path": "$HOME/docs_techniques",
     "cache_file": os.path.join(CACHE_DIR, "docs_cache.json"),
 },
 ```
@@ -592,7 +592,7 @@ ps aux | grep rag_server_rerank
 tail -50 /tmp/rag_server_rerank.log
 
 # Erreur fréquente : IndentationError après édition
-~/.venv/main/bin/python3 -c "import py_compile; py_compile.compile('/home/ksoinan/scripts/rag/rag_server_rerank.py', doraise=True)"
+$VENV_PYTHON -c "import py_compile; py_compile.compile('$RAG_SCRIPTS_DIR/rag_server_rerank.py', doraise=True)"
 ```
 
 - # L'embedding ne répond pas (port 8181)
@@ -650,7 +650,7 @@ llmr    # reranker 0.6B
 - # Mesurer les tokens max par vault
 
 ```bash
-/home/ksoinan/scripts/rag/test.sh
+$RAG_SCRIPTS_DIR/test.sh
 ```
 
 Nécessite `transformers` installé : `~/.venv/main/bin/pip install transformers`
@@ -830,12 +830,12 @@ Le filtre `is_embeddable()` rejette probablement ce chunk à cause du **ratio al
 **Vérifie :**
 
 ```bash
-~/.venv/main/bin/python3 -c "
+$VENV_PYTHON -c "
 import sys
-sys.path.insert(0, '/home/ksoinan/scripts/rag')
+sys.path.insert(0, '$RAG_SCRIPTS_DIR')
 from rag_server_rerank import is_embeddable, chunk_by_markdown
 
-with open('/home/ksoinan/obsidian/004 llm 000/07 - rag/01 Documentation complète.md', 'r') as f:
+with open('$OBSIDIAN_DIR/004 llm 000/07 - rag/01 Documentation complète.md', 'r') as f:
     content = f.read()
 
 chunks = chunk_by_markdown(content)

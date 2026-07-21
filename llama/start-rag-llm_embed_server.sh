@@ -1,15 +1,19 @@
 #!/bin/bash
-# start-rag-llm_embed_server.sh — Démarre toute la stack RAG
+# start-rag-llm_embed_server.sh — Démarre stack RAG sans reranker
 set -euo pipefail
 
-echo "=== Démarrage stack RAG ==="
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+source "${REPO_DIR}/config.sh"
+
+echo "=== Démarrage stack RAG (sans reranker) ==="
 
 # 1. Embedding Qwen3-0.6B-q8 (port 8181)
 if ss -tln 2>/dev/null | grep -q :8181; then
     echo "  ✓ Embedding déjà actif (8181)"
 else
     echo "  → Lancement embedding Qwen3-0.6B..."
-    ~/scripts/llm/rag/start-llm-embed-qwen3-06b.sh &
+    "${LLAMA_SCRIPTS_DIR}/start-llm-embed-qwen3-06b.sh" &
     sleep 4
 fi
 
@@ -18,8 +22,8 @@ if ss -tln 2>/dev/null | grep -q :8182; then
     echo "  ✓ RAG déjà actif (8182)"
 else
     echo "  → Lancement serveur RAG..."
-    ~/.venv/main/bin/python3 /home/ksoinan/scripts/rag/rag_server_rerank.py \
-        > /tmp/rag_server_rerank.log 2>&1 &
+    "${VENV_PYTHON}" "${RAG_SCRIPTS_DIR}/rag_server_rerank.py" \
+        > "${LOG_DIR}/rag_server_rerank.log" 2>&1 &
     sleep 2
 fi
 
@@ -27,4 +31,4 @@ echo ""
 echo "=== Stack prête ==="
 echo "  Santé : curl -s http://127.0.0.1:8182/health | jq ."
 echo "  Test  : rag void \"ma question\" 3"
-echo "  Logs  : tail -f /tmp/rag_server_rerank.log"
+echo "  Logs  : tail -f ${LOG_DIR}/rag_server_rerank.log"

@@ -1,8 +1,3 @@
-#!/bin/bash
-# Qwen3-Embedding-0.6B — serveur d'embedding
-# Port 8181 | pooling last (hidden state du token [EOS])
-# Dimensions : 2560 | Multilingue 100+ langues | ctx 8192
-
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../config.sh"
 
@@ -15,7 +10,7 @@ fi
 
 cd "$(dirname "$LLAMA_CPP_BIN")/.."
 exec "$LLAMA_CPP_BIN" \
-  -m "${GGUF_DIR}/Qwen3-Embedding-0.6B-Q8_0.gguf" \
+  -m "${GGUF_DIR}/Qwen3-Embedding-4B-Q4_K_M.gguf \
   --embedding \
   --pooling last \
   --n-gpu-layers 0 \
@@ -26,7 +21,6 @@ exec "$LLAMA_CPP_BIN" \
   --host 127.0.0.1 \
   --port 8181 \
   --no-mmap \
-  --cache-ram 0 \
   -ctk q8_0 \
   -ctv q8_0 \
-  > "${LOG_DIR}/llm-embed-06b.log" 2>&1
+  > /tmp/llm-embed-06b.log 2>&1
