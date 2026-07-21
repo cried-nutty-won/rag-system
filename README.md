@@ -59,7 +59,7 @@ $RAG_SCRIPTS_DIR/
 └── test_tokens.sh                    # Max tokens measurement script per vault
 ```
 
-### Fish Wrappers (exemple : add alias rag='path to rag.sh') to use the shortcut
+### Fish Wrappers (exemple : add alias rag='path to rag.sh' in your config.fish file) to use the shortcut rag
 
 ```
 $REPO_DIR/fish/
