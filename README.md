@@ -32,7 +32,7 @@ User Query
 ### Hardware (exemple)
 
 - from 8 GB unified RAM
-- Linux CPU only (`--n-gpu-layers 0`) => remove this flag for GPU use acoording to your hardware
+- Linux CPU only (`--n-gpu-layers 0`) => remove this flag for GPU use according to your hardware
 - llama.cpp custom build: `$LLAMA_CPP_BIN`
 
 ---
