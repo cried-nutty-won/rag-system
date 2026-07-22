@@ -53,7 +53,7 @@ Final Ranked Results
 | **Short queries** | 2-3 word queries produce ambiguous embeddings → poor ranking | Joint encoding compensates for query brevity by leveraging document context |
 | **Score interpretability** | RRF scores are arbitrary ranks, not comparable across queries | Reranker outputs calibrated P(yes) probabilities (0.0–1.0) |
 | **Latency cost on CPU with 0.6B models** | ~20 ms | 12 s for 18 candidates |
-| **Latency cost on GPU with 0.6B models** | ~5 ms | 1 s for 100 candidates |
+| **Latency cost on GPU with 0.6B models** | ~3 ms | 1 s for 100 candidates |
 | **Latency cost on GPU with 4B models** | ~30 ms | 3 s for 100 candidates |
 | **Token cost to LLM** | May send irrelevant chunks, wasting context | Only the most relevant chunks reach the LLM → fewer tokens, better answers |
 
