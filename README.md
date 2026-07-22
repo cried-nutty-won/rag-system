@@ -121,6 +121,7 @@ git clone https://github.com/cried-nutty-won/rag-system.git
 cd rag-system
 cp config.sh.example config.sh
 # Edit config.sh with your actual paths
+```
 
 ---
 ---
