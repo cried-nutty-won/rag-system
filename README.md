@@ -24,6 +24,44 @@ Without RAG, an LLM must either rely on its frozen training knowledge (often out
 | **Privacy** | Often requires cloud APIs (OpenAI, etc.) | 100% local, no data leaves your machine |
 | **Accuracy** | Frequent hallucinations on specific facts | Sourced answers, verifiable in your documents |
 
+## What is a Reranker?
+
+A **reranker** (or cross-encoder) is a second-stage retrieval model that reads the query and each candidate document **jointly**, then outputs a precise relevance score. Unlike the embedding model (bi-encoder) which encodes query and document separately into vectors, the reranker processes both inputs together through the full transformer stack, capturing fine-grained semantic interactions that vector similarity misses.
+
+In this pipeline, the reranker receives the top-N candidates from the RRF fusion step and reorders them by true relevance:
+
+```
+RRF Top-18 Candidates
+        │
+        ▼
+[Reranker Qwen3-0.6B]
+  reads (query + document) jointly
+  → P(yes) via cls.output.weight
+        │
+        ▼
+Final Ranked Results
+```
+
+### Why use a Reranker?
+
+| Aspect | Without Reranker (RRF only) | With Reranker |
+|--------|-----------------------------|---------------|
+| **Precision** | Good for obvious matches, weak on nuanced queries | Captures subtle semantic relationships, paraphrases, and domain-specific terminology |
+| **False positives** | BM25 promotes documents with matching keywords but irrelevant content | Cross-encoder reads the full pair and rejects keyword-matching noise |
+| **Short queries** | 2-3 word queries produce ambiguous embeddings → poor ranking | Joint encoding compensates for query brevity by leveraging document context |
+| **Score interpretability** | RRF scores are arbitrary ranks, not comparable across queries | Reranker outputs calibrated P(yes) probabilities (0.0–1.0) |
+| **Latency cost** | ~20 ms total | +10-18 s for 18 candidates (~580ms/candidate on CPU) |
+| **Token cost to LLM** | May send irrelevant chunks, wasting context | Only the most relevant chunks reach the LLM → fewer tokens, better answers |
+
+The reranker is the single largest quality improvement in the pipeline. In Dave Ebbelaar's FinanceQA benchmark, adding a reranker improved NDCG@10 by **+12 points** over hybrid retrieval alone. The latency cost is structural (one full forward pass per candidate), but the precision gain eliminates hallucinations and irrelevant context injection downstream.
+
+### When to skip the reranker
+
+- Interactive exploration where speed matters more than precision (`rag` alias)
+- Queries with highly specific keywords where BM25 alone suffices
+- Resource-constrained environments where +10s latency is unacceptable
+- The server automatically falls back to pure RRF if the reranker is offline
+
 ### Who is it for?
 
 - **Humans**: fast search across Obsidian notes, technical documentation, meeting transcripts
