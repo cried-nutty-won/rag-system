@@ -192,20 +192,14 @@ Expected output (exemple) :
 }
 ```
 
-### Step 6: Shell aliases (optional)
+### Step 6: Shell aliases
 
 Add to your `~/.config/fish/config.fish` or `~/.bashrc`:
 
-```bash
-# Fish
+```
 alias llmers='bash /path/to/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
 alias rag='bash /path/to/rag-system/server/search_vault.sh --no-rerank'
 alias ragr='bash /path/to/rag-system/server/search_vault.sh'
-
-# Bash/Zsh
-alias llmers='bash /path/to/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
-alias rag='/path/to/rag-system/server/search_vault.sh --no-rerank'
-alias ragr='/path/to/rag-system/server/search_vault.sh'
 ```
 
 ### Troubleshooting installation
