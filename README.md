@@ -87,6 +87,8 @@ The reranker is the single largest quality improvement in the pipeline. In Dave 
 
 No GPU required — runs entirely on CPU if needed. GPU acceleration is optional and speeds up both embedding and reranking proportionally.
 
+---
+
 ### Other Backends
 
 | Scenario | Recommended Backend | Why |
