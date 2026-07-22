@@ -108,7 +108,7 @@ No GPU required — runs entirely on CPU if needed. GPU acceleration is optional
 
 ### Prerequisites
 
-- **llama.cpp** compiled with CPU support (or CUDA/Metal/Vulkan for GPU acceleration)
+- **llama.cpp** compiled with CPU support (or CUDA/Metal/Vulkan for GPU acceleration) or vLLM, SGLang , ollama
 - **Python 3.10+** with a virtual environment
 - **GGUF models**:
   - Embedding: `Qwen3-Embedding-0.6B-Q8_0.gguf` ([official Qwen](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF))
