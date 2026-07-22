@@ -98,6 +98,7 @@ Le serveur RAG (`rag_server_rerank.py`) communique avec les modèles d'embedding
 | **Ollama** | `POST /api/embeddings` | Non supporté | Mono-utilisateur | Embedding uniquement. Option légère ou fallback |
 
 ---
+---
 
 # 1. Architecture
 
