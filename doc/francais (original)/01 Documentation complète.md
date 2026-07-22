@@ -87,6 +87,16 @@ Cette stack RAG fonctionne sur **tout matériel supporté par llama.cpp** :
 
 Aucun GPU requis — fonctionne entièrement sur CPU si nécessaire. L'accélération GPU est optionnelle et accélère l'embedding et le reranking proportionnellement.
 
+### autres matériels compatibles
+
+Le serveur RAG (`rag_server_rerank.py`) communique avec les modèles d'embedding et de reranking via des **APIs HTTP standards**. Il est totalement agnostique du backend — seule la couche de serving change.
+
+| Backend | Endpoint Embedding | Endpoint Reranker | Multi-utilisateur | Notes |
+|---------|-------------------|-------------------|-------------------|-------|
+| **vLLM** | `POST /v1/embeddings` | `POST /v1/rerank` | Multi-session natif | Recommandé pour clusters DGX/GPU. Utilise le chat template Qwen3 nativement |
+| **SGLang** | `POST /v1/embeddings` | `POST /v1/rerank` | Haute concurrence | Alternative à vLLM, optimisé pour le débit |
+| **Ollama** | `POST /api/embeddings` | Non supporté | Mono-utilisateur | Embedding uniquement. Option légère ou fallback |
+
 ---
 
 # 1. Architecture
