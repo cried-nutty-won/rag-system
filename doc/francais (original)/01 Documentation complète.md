@@ -87,6 +87,8 @@ Cette stack RAG fonctionne sur **tout matériel supporté par llama.cpp** :
 
 Aucun GPU requis — fonctionne entièrement sur CPU si nécessaire. L'accélération GPU est optionnelle et accélère l'embedding et le reranking proportionnellement.
 
+---
+
 ### autres matériels compatibles
 
 Le serveur RAG (`rag_server_rerank.py`) communique avec les modèles d'embedding et de reranking via des **APIs HTTP standards**. Il est totalement agnostique du backend — seule la couche de serving change.
