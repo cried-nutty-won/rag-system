@@ -1,5 +1,50 @@
 # RAG Hybrid + Reranker — Full Documentation
 
+## introduction
+
+## What is RAG?
+
+**RAG** (Retrieval-Augmented Generation) is an architecture that enables an LLM to answer questions by retrieving relevant documents from a knowledge base and injecting them into the context, rather than relying solely on its internal parameters.
+
+Concretely, when you (or an LLM agent) ask a question:
+
+1. The system **retrieves** relevant passages from your documents (Obsidian notes, technical docs, procedures)
+2. It **injects** only those passages into the LLM's context
+3. The LLM **answers** with source citations
+
+Without RAG, an LLM must either rely on its frozen training knowledge (often outdated or hallucinated) or ingest entire documents into its context window (expensive and slow).
+
+### Why use RAG?
+
+| Benefit | Without RAG | With RAG |
+|---------|-------------|----------|
+| **Response speed** | LLM must process full context (~30k tokens) | Indexed search in ~20ms, only top-5 sent to LLM |
+| **Token consumption** | Entire corpus injected (thousands of pages) | 5-10 relevant chunks (~2000 tokens) |
+| **Ecological impact** | Maximum GPU/CPU compute per query | Compute proportional to actual relevance |
+| **Privacy** | Often requires cloud APIs (OpenAI, etc.) | 100% local, no data leaves your machine |
+| **Accuracy** | Frequent hallucinations on specific facts | Sourced answers, verifiable in your documents |
+
+### Who is it for?
+
+- **Humans**: fast search across Obsidian notes, technical documentation, meeting transcripts
+- **LLM Agents**: an agent can call RAG as a tool (`tool calling`) to consult your knowledge base before answering, without stuffing its context window
+
+### Hardware Compatibility
+
+This RAG stack runs on **any hardware supported by llama.cpp**:
+
+| Backend | Status | Notes |
+|---------|--------|-------|
+| CPU (x86, ARM, RISC-V) | Full support | AVX2/AVX512/NEON auto-detected |
+| NVIDIA GPU (CUDA) | Full support | `--n-gpu-layers all` for max speed |
+| Apple Silicon (Metal) | Full support | Unified memory, no VRAM limits |
+| AMD GPU (HIP/Vulkan) | Supported | Via llama.cpp Vulkan backend |
+| Intel GPU (SYCL) | Supported | Via llama.cpp SYCL backend |
+
+No GPU required — runs entirely on CPU if needed. GPU acceleration is optional and speeds up both embedding and reranking proportionally.
+
+---
+
 ## 1. Architecture
 
 ### Search Pipeline
