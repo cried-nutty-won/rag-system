@@ -75,7 +75,7 @@ The reranker is the single largest quality improvement in the pipeline. In Dave 
 
 ## Hardware Compatibility
 
-This RAG stack runs on **any hardware supported by llama.cpp**:
+### This RAG stack runs on **any hardware supported by llama.cpp**:
 
 | Backend | Status | Notes |
 |---------|--------|-------|
@@ -86,6 +86,17 @@ This RAG stack runs on **any hardware supported by llama.cpp**:
 | Intel GPU (SYCL) | Supported | Via llama.cpp SYCL backend |
 
 No GPU required — runs entirely on CPU if needed. GPU acceleration is optional and speeds up both embedding and reranking proportionally.
+
+### Other Backends
+
+| Scenario | Recommended Backend | Why |
+|----------|--------------------|----|
+| Multi-user, GPU cluster (DGX, etc.) | vLLM | Native batching, PagedAttention, concurrent sessions |
+| High-throughput production | SGLang | RadixAttention prefix caching, optimized scheduler |
+| Quick prototyping, embedding only | Ollama | Zero-config model management |
+| Mixed: embedding on GPU + reranker on CPU | llama.cpp + vLLM | Each backend serves what it does best |
+
+> **Note:** Ollama does not support reranking. When using Ollama for embeddings, keep a separate llama.cpp or vLLM instance for the reranker, or disable reranking (`--no-rerank`).
 
 ---
 
