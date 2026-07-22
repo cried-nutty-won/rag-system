@@ -62,6 +62,8 @@ The reranker is the single largest quality improvement in the pipeline. In Dave 
 - Resource-constrained environments where +10s latency is unacceptable
 - The server automatically falls back to pure RRF if the reranker is offline
 
+---
+
 ### Who is it for?
 
 - **Humans**: fast search across Obsidian notes, technical documentation, meeting transcripts
