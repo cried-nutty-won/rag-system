@@ -180,7 +180,7 @@ bash llama/start-rag-llm_embed_reranker_server.sh
 curl -s http://127.0.0.1:8182/health | jq .
 ```
 
-Sortie attendue (exemple) :
+Sortie attendue (example) :
 
 ```json
 {
