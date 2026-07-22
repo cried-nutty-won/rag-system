@@ -24,6 +24,8 @@ Without RAG, an LLM must either rely on its frozen training knowledge (often out
 | **Privacy** | Often requires cloud APIs (OpenAI, etc.) | 100% local, no data leaves your machine |
 | **Accuracy** | Frequent hallucinations on specific facts | Sourced answers, verifiable in your documents |
 
+---
+
 ## What is a Reranker?
 
 A **reranker** (or cross-encoder) is a second-stage retrieval model that reads the query and each candidate document **jointly**, then outputs a precise relevance score. Unlike the embedding model (bi-encoder) which encodes query and document separately into vectors, the reranker processes both inputs together through the full transformer stack, capturing fine-grained semantic interactions that vector similarity misses.
@@ -68,6 +70,8 @@ The reranker is the single largest quality improvement in the pipeline. In Dave 
 
 - **Humans**: fast search across Obsidian notes, technical documentation, meeting transcripts
 - **LLM Agents**: an agent can call RAG as a tool (`tool calling`) to consult your knowledge base before answering, without stuffing its context window
+
+---
 
 ### Hardware Compatibility
 
