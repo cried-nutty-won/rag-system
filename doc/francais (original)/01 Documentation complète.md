@@ -53,6 +53,9 @@ Résultats Finaux Classés
 | **Requêtes courtes** | Les requêtes de 2-3 mots produisent des embeddings ambigus → mauvais classement | L'encodage conjoint compense la brièveté de la requête en exploitant le contexte du document |
 | **Interprétabilité des scores** | Les scores RRF sont des rangs arbitraires, non comparables entre requêtes | Le reranker produit des probabilités P(yes) calibrées (0.0–1.0) |
 | **Coût en latence** | ~20 ms total | +10-18 s pour 18 candidats (~580ms/candidat sur CPU) |
+| **Latence sur CPU with 0.6B models** | ~20 ms | 12 s for 18 candidates |
+| **Latence sur GPU with 0.6B models** | ~3 ms | 1 s for 100 candidates |
+| **Latence sur GPU with 4B models** | ~30 ms | 3 s for 100 candidates |
 | **Coût en tokens pour le LLM** | Peut envoyer des chunks non pertinents, gaspillant le contexte | Seuls les chunks les plus pertinents atteignent le LLM → moins de tokens, meilleures réponses |
 
 Le reranker est l'amélioration de qualité la plus significative du pipeline. Dans le benchmark FinanceQA de Dave Ebbelaar, l'ajout d'un reranker a amélioré le NDCG@10 de **+12 points** par rapport au retrieval hybride seul. Le coût en latence est structurel (un forward pass complet par candidat), mais le gain en précision élimine les hallucinations et l'injection de contexte non pertinent en aval.
