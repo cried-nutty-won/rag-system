@@ -122,6 +122,101 @@ cd rag-system
 cp config.sh.example config.sh
 # Edit config.sh with your actual paths
 ```
+Edit `config.sh` to match your environment:
+
+```bash
+LLAMA_CPP_BIN="$HOME/llama-cpp-turboquant/build-cpu/bin/llama-server"
+GGUF_DIR="$HOME/models/GGUF/rag"
+OBSIDIAN_DIR="$HOME/obsidian"
+VENV_PYTHON="$HOME/.venv/main/bin/python3"
+RAG_SCRIPTS_DIR="$(pwd)/server"
+LLAMA_SCRIPTS_DIR="$(pwd)/llama"
+LOG_DIR="/tmp"
+```
+
+### Step 2: Python dependencies
+
+```bash
+python3 -m venv ~/.venv/main
+~/.venv/main/bin/pip install numpy requests rank_bm25
+```
+
+### Step 3: Download models
+
+```bash
+mkdir -p $GGUF_DIR
+
+# Embedding (official Qwen GGUF)
+huggingface-cli download Qwen/Qwen3-Embedding-0.6B-GGUF \
+  Qwen3-Embedding-0.6B-Q8_0.gguf --local-dir $GGUF_DIR
+
+# Reranker (Voodisss ONLY — do NOT use other sources)
+huggingface-cli download Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp \
+  Qwen3-Reranker-0.6B-Q4_K_M.gguf --local-dir $GGUF_DIR
+```
+
+### Step 4: Configure vaults
+
+Edit `server/rag_server_rerank.py` and update `VAULTS_CONFIG` with your Obsidian vault paths:
+
+```python
+VAULTS_CONFIG = {
+    "void":     {"path": os.path.join(OBSIDIAN_DIR, "001 Void 000")},
+    "linux":    {"path": os.path.join(OBSIDIAN_DIR, "000 linux 000")},
+    # Add your vaults here
+}
+```
+
+### Step 5: First launch
+
+```bash
+# Start the full stack (embedding + reranker + RAG server)
+bash llama/start-rag-llm_embed_reranker_server.sh
+
+# Wait for indexing (~5-15 min on first run, instant on subsequent runs via cache)
+# Verify health:
+curl -s http://127.0.0.1:8182/health | jq .
+```
+
+Expected output:
+
+```json
+{
+  "status": "ok",
+  "mode": "hybrid+reranker",
+  "embedding_model": "qwen3-embed-06b",
+  "reranker_model": "Qwen3-Reranker-0.6B",
+  "vaults": ["void", "linux", "..."],
+  "total_chunks": 3218,
+  "port": 8182
+}
+```
+
+### Step 6: Shell aliases (optional)
+
+Add to your `~/.config/fish/config.fish` or `~/.bashrc`:
+
+```bash
+# Fish
+alias llmers='bash /path/to/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
+alias rag='bash /path/to/rag-system/server/search_vault.sh --no-rerank'
+alias ragr='bash /path/to/rag-system/server/search_vault.sh'
+
+# Bash/Zsh
+alias llmers='bash /path/to/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
+alias rag='/path/to/rag-system/server/search_vault.sh --no-rerank'
+alias ragr='/path/to/rag-system/server/search_vault.sh'
+```
+
+### Troubleshooting installation
+
+| Problem | Solution |
+|---------|----------|
+| Reranker scores ~`1e-28` | Wrong GGUF source. Re-download from [Voodisss](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp) |
+| `"This server does not support reranking"` | Missing flags. Ensure `--reranking --pooling rank --embedding` are all present |
+| Port already in use | `pkill -f llama-server && pkill -f rag_server_rerank` then restart |
+| OOM on startup | Add `--cache-ram 0` to both llama-server scripts (disables 8 GiB host prompt cache) |
+| Slow first indexing | Normal. Subsequent starts use cached embeddings (instant) |
 
 ---
 ---
