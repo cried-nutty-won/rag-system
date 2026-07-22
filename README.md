@@ -104,6 +104,27 @@ No GPU required — runs entirely on CPU if needed. GPU acceleration is optional
 ---
 ---
 
+# Installation
+
+### Prerequisites
+
+- **llama.cpp** compiled with CPU support (or CUDA/Metal/Vulkan for GPU acceleration)
+- **Python 3.10+** with a virtual environment
+- **GGUF models**:
+  - Embedding: `Qwen3-Embedding-0.6B-Q8_0.gguf` ([official Qwen](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF))
+  - Reranker: `Qwen3-Reranker-0.6B-Q4_K_M.gguf` (**must be from [Voodisss](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp)** — community GGUFs are broken, see [llama.cpp #16407](https://github.com/ggml-org/llama.cpp/issues/16407))
+
+### Step 1: Clone and configure
+
+```bash
+git clone https://github.com/cried-nutty-won/rag-system.git
+cd rag-system
+cp config.sh.example config.sh
+# Edit config.sh with your actual paths
+
+---
+---
+
 ## 1. Architecture
 
 ### Search Pipeline
