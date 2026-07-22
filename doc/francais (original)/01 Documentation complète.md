@@ -1,5 +1,50 @@
 `Documentation complète RAG Hybrid + Reranker`
 
+# introduction
+
+## Qu'est-ce que le RAG ?
+
+**RAG** (Retrieval-Augmented Generation) est une architecture qui permet à un LLM de répondre à une question en s'appuyant sur des documents précis, récupérés dynamiquement dans une base de connaissances, plutôt que sur ses seuls paramètres internes.
+
+Concrètement, quand vous (ou un agent LLM) posez une question :
+
+1. Le système **recherche** les passages pertinents dans vos documents (notes Obsidian, documentation technique, procédures)
+2. Il **injecte** uniquement ces passages dans le contexte du LLM
+3. Le LLM **répond** en citant ses sources
+
+Sans RAG, un LLM doit soit se fier à ses connaissances figées (souvent obsolètes ou hallucinées), soit ingérer des documents entiers dans son contexte (coûteux et lent).
+
+### Pourquoi utiliser un RAG ?
+
+| Bénéfice | Sans RAG | Avec RAG |
+|----------|----------|----------|
+| **Vitesse de réponse** | Le LLM doit parcourir tout le contexte (~30k tokens) | Recherche indexée en ~20ms, seul le top-5 est envoyé au LLM |
+| **Consommation de tokens** | Corpus entier injecté (milliers de pages) | 5-10 chunks pertinents (~2000 tokens) |
+| **Impact écologique** | Calcul GPU/CPU maximal à chaque requête | Calcul proportionnel à la pertinence réelle |
+| **Confidentialité** | Nécessite souvent un API cloud (OpenAI, etc.) | 100% local, aucune donnée ne quitte votre machine |
+| **Précision** | Hallucinations fréquentes sur des faits spécifiques | Réponses sourcées, vérifiables dans vos documents |
+
+### Pour qui ?
+
+- **Humains** : recherche rapide dans vos notes Obsidian, documentation technique, transcripts de réunions
+- **Agents LLM** : un agent peut appeler le RAG comme un outil (`tool calling`) pour consulter votre base de connaissances avant de répondre, sans bourrer son contexte
+
+### Compatibilité matérielle
+
+Cette stack RAG fonctionne sur **tout matériel supporté par llama.cpp** :
+
+| Backend | Statut | Notes |
+|---------|--------|-------|
+| CPU (x86, ARM, RISC-V) | Support complet | AVX2/AVX512/NEON auto-détecté |
+| GPU NVIDIA (CUDA) | Support complet | `--n-gpu-layers all` pour vitesse max |
+| Apple Silicon (Metal) | Support complet | Mémoire unifiée, pas de limite VRAM |
+| GPU AMD (HIP/Vulkan) | Supporté | Via le backend Vulkan de llama.cpp |
+| GPU Intel (SYCL) | Supporté | Via le backend SYCL de llama.cpp |
+
+Aucun GPU requis — fonctionne entièrement sur CPU si nécessaire. L'accélération GPU est optionnelle et accélère l'embedding et le reranking proportionnellement.
+
+---
+
 # 1. Architecture
 
 - # Pipeline de recherche
