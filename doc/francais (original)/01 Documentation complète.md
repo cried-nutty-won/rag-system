@@ -71,6 +71,8 @@ Le reranker est l'amélioration de qualité la plus significative du pipeline. D
 - **Humains** : recherche rapide dans vos notes Obsidian, documentation technique, transcripts de réunions
 - **Agents LLM** : un agent peut appeler le RAG comme un outil (`tool calling`) pour consulter votre base de connaissances avant de répondre, sans bourrer son contexte
 
+---
+
 ### Compatibilité matérielle
 
 Cette stack RAG fonctionne sur **tout matériel supporté par llama.cpp** :
