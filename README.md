@@ -100,7 +100,7 @@ No GPU required — runs entirely on CPU if needed. GPU acceleration is optional
 | Quick prototyping, embedding only | Ollama | Zero-config model management |
 | Mixed: embedding on GPU + reranker on CPU | llama.cpp + vLLM | Each backend serves what it does best |
 
-> **Note:** Ollama does not support reranking. When using Ollama for embeddings, keep a separate llama.cpp or vLLM instance for the reranker, or disable reranking (`--no-rerank`).
+> **Note:** Ollama does not support reranking. When using Ollama for embeddings disable reranking (`--no-rerank`).
 
 ---
 ---
