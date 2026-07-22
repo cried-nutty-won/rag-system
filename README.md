@@ -52,8 +52,8 @@ Final Ranked Results
 | **False positives** | BM25 promotes documents with matching keywords but irrelevant content | Cross-encoder reads the full pair and rejects keyword-matching noise |
 | **Short queries** | 2-3 word queries produce ambiguous embeddings → poor ranking | Joint encoding compensates for query brevity by leveraging document context |
 | **Score interpretability** | RRF scores are arbitrary ranks, not comparable across queries | Reranker outputs calibrated P(yes) probabilities (0.0–1.0) |
-| **Latency cost on CPU** | ~20 ms total with 0.6B model | +12 s for 18 candidates (sweet spot) with 0.6B model |
-| **Latency cost on GPU** | ~5 ms total or ~30 ms with 4B model (sweet spot) | +1 s for 100 candidates (sweet spot) or +3 s with 4B model |
+| **Latency cost on CPU** | ~20 ms 0.6B model | +12 s for 18 candidates (sweet spot) 0.6B model |
+| **Latency cost on GPU** | ~5 ms 0.6B model or ~30 ms 4B model (sweet spot) | +1 s for 100 candidates (sweet spot) or +3 s 4B model |
 | **Token cost to LLM** | May send irrelevant chunks, wasting context | Only the most relevant chunks reach the LLM → fewer tokens, better answers |
 
 The reranker is the single largest quality improvement in the pipeline. In Dave Ebbelaar's FinanceQA benchmark, adding a reranker improved NDCG@10 by **+12 points** over hybrid retrieval alone. The latency cost is structural (one full forward pass per candidate), but the precision gain eliminates hallucinations and irrelevant context injection downstream.
