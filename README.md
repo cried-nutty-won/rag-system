@@ -1,4 +1,4 @@
-# RAG Hybrid + Reranker — Full Documentation
+# RAG Hybrid + Reranker
 
 # introduction
 
