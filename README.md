@@ -740,7 +740,7 @@ du -sh ~/.rag/
 
 ---
 
-## 11. Estimated RAM
+## 11. Estimated RAM with ai agent
 
 | Component | Configuration | RAM |
 |-----------|--------------|-----|
