@@ -100,7 +100,9 @@ No GPU required — runs entirely on CPU if needed. GPU acceleration is optional
 
 > **Note:** Ollama does not support reranking. When using Ollama for embeddings, keep a separate llama.cpp or vLLM instance for the reranker, or disable reranking (`--no-rerank`).
 
+
 ---
+
 
 ## 1. Architecture
 
