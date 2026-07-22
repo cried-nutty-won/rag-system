@@ -861,3 +861,5 @@ A: Official Qwen3 blog says: "The Embedding model processes a single text segmen
 | **NDCG@K** | Normalized Discounted Cumulative Gain. Retrieval quality metric (0-1). |
 | **MRL** | Matryoshka Representation Learning. Allows flexible embedding dimensions (32 to 2560 for Qwen3-4B). |
 | **Instruction-aware** | Model's ability to adapt behavior based on a custom instruction (1-5% gain). |
+
+Recommanded system (not mandatory) : Void Linux
