@@ -157,7 +157,7 @@ huggingface-cli download Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp \
 
 ### Step 4: Configure vaults
 
-Edit `server/rag_server_rerank.py` and update `VAULTS_CONFIG` with your Obsidian vault paths:
+Edit `server/rag_server_rerank.py` and update `VAULTS_CONFIG` with your Obsidian or documentation vault paths:
 
 ```python
 VAULTS_CONFIG = {
