@@ -105,6 +105,124 @@ Le serveur RAG (`rag_server_rerank.py`) communique avec les modèles d'embedding
 ---
 ---
 
+# Installation
+
+### Prérequis
+
+- **llama.cpp** compilé avec support CPU (ou CUDA/Metal/Vulkan pour accélération GPU) ou autres
+- **Python 3.10+** avec environnement virtuel
+- **Modèles GGUF** :
+  - Embedding : `Qwen3-Embedding-0.6B-Q8_0.gguf` ([Qwen officiel](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF))
+  - Reranker : `Qwen3-Reranker-0.6B-Q4_K_M.gguf` (**obligatoirement de [Voodisss](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp)** — les GGUF communautaires sont cassés, voir [llama.cpp #16407](https://github.com/ggml-org/llama.cpp/issues/16407))
+
+### Étape 1 : Cloner et configurer
+
+```bash
+git clone https://github.com/cried-nutty-won/rag-system.git
+cd rag-system
+cp config.sh.example config.sh
+# Éditer config.sh avec vos chemins réels
+```
+
+Éditez `config.sh` pour correspondre à votre environnement :
+
+```bash
+LLAMA_CPP_BIN="$HOME/llama-cpp-turboquant/build-cpu/bin/llama-server"
+GGUF_DIR="$HOME/models/GGUF/rag"
+OBSIDIAN_DIR="$HOME/obsidian"
+VENV_PYTHON="$HOME/.venv/main/bin/python3"
+RAG_SCRIPTS_DIR="$(pwd)/server"
+LLAMA_SCRIPTS_DIR="$(pwd)/llama"
+LOG_DIR="/tmp"
+```
+
+### Étape 2 : Dépendances Python
+
+```bash
+python3 -m venv ~/.venv/main
+~/.venv/main/bin/pip install numpy requests rank_bm25
+```
+
+### Étape 3 : Télécharger les modèles
+
+```bash
+mkdir -p $GGUF_DIR
+
+# Embedding (GGUF officiel Qwen)
+huggingface-cli download Qwen/Qwen3-Embedding-0.6B-GGUF \
+  Qwen3-Embedding-0.6B-Q8_0.gguf --local-dir $GGUF_DIR
+
+# Reranker (Voodisss UNIQUEMENT — n'utilisez PAS d'autres sources)
+huggingface-cli download Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp \
+  Qwen3-Reranker-0.6B-Q4_K_M.gguf --local-dir $GGUF_DIR
+```
+
+### Étape 4 : Configurer les vaults
+
+Éditez `server/rag_server_rerank.py` et mettez à jour `VAULTS_CONFIG` avec les chemins de vos vaults Obsidian :
+
+```python
+VAULTS_CONFIG = {
+    "void":     {"path": os.path.join(OBSIDIAN_DIR, "001 Void 000")},
+    "linux":    {"path": os.path.join(OBSIDIAN_DIR, "000 linux 000")},
+    # Ajoutez vos vaults ici
+}
+```
+
+### Étape 5 : Premier lancement
+
+```bash
+# Démarrer la stack complète (embedding + reranker + serveur RAG)
+bash llama/start-rag-llm_embed_reranker_server.sh
+
+# Attendre l'indexation (~5-15 min au premier lancement, instantané ensuite via le cache)
+# Vérifier la santé :
+curl -s http://127.0.0.1:8182/health | jq .
+```
+
+Sortie attendue :
+
+```json
+{
+  "status": "ok",
+  "mode": "hybrid+reranker",
+  "embedding_model": "qwen3-embed-06b",
+  "reranker_model": "Qwen3-Reranker-0.6B",
+  "vaults": ["void", "linux", "..."],
+  "total_chunks": 3218,
+  "port": 8182
+}
+```
+
+### Étape 6 : Alias shell
+
+Ajoutez à votre `~/.config/fish/config.fish` ou `~/.bashrc` :
+
+```bash
+# Fish
+alias llmers='bash /chemin/vers/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
+alias rag='bash /chemin/vers/rag-system/server/search_vault.sh --no-rerank'
+alias ragr='bash /chemin/vers/rag-system/server/search_vault.sh'
+
+# Bash/Zsh
+alias llmers='bash /chemin/vers/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
+alias rag='/chemin/vers/rag-system/server/search_vault.sh --no-rerank'
+alias ragr='/chemin/vers/rag-system/server/search_vault.sh'
+```
+
+### Dépannage de l'installation
+
+| Problème | Solution |
+|----------|----------|
+| Scores reranker ~`1e-28` | Mauvaise source GGUF. Retélécharger depuis [Voodisss](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp) |
+| `"This server does not support reranking"` | Flags manquants. S'assurer que `--reranking --pooling rank --embedding` sont tous présents |
+| Port déjà occupé | `pkill -f llama-server && pkill -f rag_server_rerank` puis redémarrer |
+| OOM au démarrage | Ajouter `--cache-ram 0` aux deux scripts llama-server (désactive le cache prompt host de 8 GiB) |
+| Première indexation lente | Normal. Les démarrages suivants utilisent les embeddings en cache (instantané) |
+
+---
+---
+
 # 1. Architecture
 
 - # Pipeline de recherche
