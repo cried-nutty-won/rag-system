@@ -1,6 +1,6 @@
 # RAG Hybrid + Reranker — Full Documentation
 
-## introduction
+# introduction
 
 ## What is RAG?
 
@@ -66,14 +66,14 @@ The reranker is the single largest quality improvement in the pipeline. In Dave 
 
 ---
 
-### Who is it for?
+## Who is it for?
 
 - **Humans**: fast search across Obsidian notes, technical documentation, meeting transcripts
 - **LLM Agents**: an agent can call RAG as a tool (`tool calling`) to consult your knowledge base before answering, without stuffing its context window
 
 ---
 
-### Hardware Compatibility
+## Hardware Compatibility
 
 This RAG stack runs on **any hardware supported by llama.cpp**:
 
