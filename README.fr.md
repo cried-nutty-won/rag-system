@@ -2,7 +2,7 @@
 
 # introduction
 
-## Qu'est-ce que le RAG ?
+## Qu'est-ce qu'un RAG ?
 
 Le **RAG** (Retrieval-Augmented Generation — Génération Augmentée par Récupération) est une architecture qui permet à un LLM de répondre à des questions en récupérant des documents pertinents depuis une base de connaissances et en les injectant dans le contexte, plutôt que de se fier uniquement à ses paramètres internes.
 
