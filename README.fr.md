@@ -1,4 +1,4 @@
-# RAG Hybride + Reranker [En](README.md)
+# RAG Hybride + Reranker  [(en)](README.md)
 
 # introduction
 
