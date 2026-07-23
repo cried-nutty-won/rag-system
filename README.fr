@@ -1,0 +1,19 @@
+# Nom du projet
+
+README en français.
+
+## Environnement
+
+- Système : Asahi Void
+- Shell : fish
+- Éditeur : Helix (hx)
+
+## Scripts
+
+Les scripts sont dans /home/ksoinan/scripts/ et ses sous-dossiers.
+
+## Utilisation
+
+Pour modifier ce fichier, ouvrir Helix :
+
+    hx README.fr
