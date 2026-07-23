@@ -103,11 +103,114 @@ No GPU required — runs entirely on CPU if needed. GPU acceleration is optional
 > **Note:** Ollama does not support reranking. When using Ollama for embeddings disable reranking (`--no-rerank`).
 
 ---
+
+### Backend Compatibility Summary
+
+| Backend | Embedding | Reranking | RAG mode |
+|---|---|---|---|
+| llamacpp | ✅ `POST /embedding` | ✅ `POST /v1/rerank` | Hybrid + Reranker |
+| vLLM | ✅ `POST /v1/embeddings` | ✅ `POST /v1/rerank` | Hybrid + Reranker |
+| sglang | ✅ `POST /v1/embeddings` | ✅ `POST /v1/rerank` | Hybrid + Reranker |
+| ollama | ✅ `POST /api/embeddings` | ❌ | Hybrid (RRF only) |
+
+The RAG server adapts automatically: if the reranker is unreachable, it falls back to pure RRF without error.
+
+#### Configuring the RAG server for each backend
+
+```bash
+# llamacpp (default)
+export LLAMA_EMBED_URL="http://127.0.0.1:8181/embedding"
+export LLAMA_RERANK_URL="http://127.0.0.1:8184/v1/rerank"
+
+# vLLM
+export LLAMA_EMBED_URL="http://127.0.0.1:8000/v1/embeddings"
+export LLAMA_RERANK_URL="http://127.0.0.1:8001/v1/rerank"
+
+# sglang
+export LLAMA_EMBED_URL="http://127.0.0.1:8000/v1/embeddings"
+export LLAMA_RERANK_URL="http://127.0.0.1:8001/v1/rerank"
+
+# ollama (embedding only, no reranker)
+export LLAMA_EMBED_URL="http://127.0.0.1:11434/api/embeddings"
+# No reranker URL — automatic RRF fallback
+```
+
+---
+
+## Model Selection
+
+| Hardware | Embedding | Reranker | Why |
+|----------|-----------|----------|-----|
+| CPU only (8 GB RAM) | 0.6B Q8_0 | 0.6B Q4_K_M | Fits in RAM, interactive latency |
+| GPU (6+ GB VRAM) | 4B Q4_K_M | 4B Q4_K_M | Best quality, ~3s for 100 candidates |
+| GPU (24+ GB VRAM) | 4B F16 | 4B F16 | Maximum quality, no quantization loss |
+
+### GGUF Models
+
+| Model | Quant | Size | Hardware | MTEB |
+|-------|-------|------|----------|------|
+| Qwen3-Embedding-0.6B | Q8_0 | 610 MB | CPU or GPU | 64.33 |
+| Qwen3-Embedding-4B | Q4_K_M | 2.4 GB | GPU recommended | 69.45 |
+| Qwen3-Reranker-0.6B | Q4_K_M | 379 MB | CPU or GPU | 65.80 |
+| Qwen3-Reranker-4B | Q4_K_M | 2.4 GB | GPU recommended | 69.76 |
+
+- Embedding: [Qwen/Qwen3-Embedding-0.6B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF) or [Qwen/Qwen3-Embedding-4B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-4B-GGUF) (official)
+- Reranker: [Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp) or [Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp) (**mandatory** — community GGUFs are broken, see [llama.cpp #16407](https://github.com/ggml-org/llama.cpp/issues/16407))
+
+### MTEB (Massive Text Embedding Benchmark)
+
+MTEB is the reference benchmark for evaluating embedding model quality. It measures a model's ability to produce vectors that capture text meaning, across **8 task types**:
+
+| Task | What it measures | Example |
+|---|---|---|
+| **Retrieval** | Finding the right document among thousands | "What is the nftables procedure?" → find the right file |
+| **Reranking** | Reordering candidates by relevance | Rank 18 chunks from most to least relevant |
+| **Classification** | Categorizing a text | "Is this document about networking or storage?" |
+| **Clustering** | Grouping similar texts | Group notes by topic |
+| **STS** (Semantic Textual Similarity) | Measuring similarity between two sentences | "nftables firewall" ≈ "nftables firewall rules" |
+| **Pair Classification** | Determining if two texts are related | "Does this procedure match this question?" |
+| **Bitext Mining** | Finding the corresponding translation | FR ↔ EN |
+| **Summarization** | Evaluating summary quality | — |
+
+The MTEB **Retrieval** score is the most important for RAG: it directly measures the model's ability to find the right document. The higher the score, the less the RAG needs the reranker to compensate.
+
+| Model | MTEB Multilingual | MTEB Retrieval | Dimensions |
+|---|---|---|---|
+| Qwen3-Embedding-0.6B | 64.33 | 64.64 | 1024 |
+| Qwen3-Embedding-4B | 69.45 | 69.60 | 2560 |
+| Qwen3-Embedding-8B | 70.58 | 70.88 | 4096 |
+
+The 0.6B is sufficient for a local RAG with reranker. The 4B adds +5 points but requires a GPU.
+
+---
 ---
 
 # Installation
 
-### Prerequisites
+### Quick Install (recommended)
+
+```bash
+git clone https://github.com/cried-nutty-won/rag-system.git
+cd rag-system
+bash install.sh
+
+The interactive installer handles everything:
+- Detects OS, RAM, GPU (NVIDIA, Apple Silicon, lspci)
+- Detects shell (fish, bash, zsh, sh) and writes aliases to the correct config
+- Offers 0.6B models (default) or 4B models (GPU only — hidden on CPU)
+- Downloads GGUF from official Qwen + Voodisss
+- Configures vaults interactively (Obsidian + documentation)
+- Installs 10 shell shortcuts
+
+Test without modifying anything: `bash install.sh --dry-run`
+
+To uninstall: `bash uninstall.sh`
+
+---
+
+### Manual Installation
+
+#### Prerequisites
 
 - **llama.cpp** compiled with CPU support (or CUDA/Metal/Vulkan for GPU acceleration) or vLLM, SGLang , ollama
 - **Python 3.10+** with a virtual environment
@@ -193,14 +296,36 @@ Expected output (exemple) :
 }
 ```
 
-### Step 6: Shell aliases
+### Step 6: Shell aliases (10 shortcuts)
 
-Add to your `~/.config/fish/config.fish` or `~/.bashrc`:
+The installer adds these automatically. For manual setup, add to your shell config
+(`~/.config/fish/config.fish`, `~/.bashrc`, `~/.zshrc`):
+
+| Command | Action |
+|---------|--------|
+| `llmers` | Start full stack (embedding + reranker + RAG server) |
+| `llmes` | Start embedding + RAG server (no reranker) |
+| `llme` | Start embedding only (port 8181) |
+| `llmr` | Start reranker only (port 8184) |
+| `rs` | Start Python RAG server only (port 8182) |
+| `rst` | Tail -f RAG server logs |
+| `rag <vault> "<query>"` | Fast search (~20ms) |
+| `ragr <vault> "<query>"` | Slow and precise search with reranker (~10-18s CPU, ~1s GPU) |
+| `rc` | Health check all 3 services |
+| `rsk` | Kill the Python RAG server |
 
 ```bash
+# Fish
 alias llmers='bash /path/to/rag-system/llama/start-rag-llm_embed_reranker_server.sh &'
+alias llmes='bash /path/to/rag-system/llama/start-rag-llm_embed_server.sh &'
+alias llme='bash /path/to/rag-system/llama/start-llm-embed-qwen3-06b.sh &'
+alias llmr='bash /path/to/rag-system/llama/start-llm-reranker-06b.sh &'
+alias rs='bash /path/to/rag-system/server/rag_server_rerank.py &'
+alias rst='tail -f /tmp/rag_server_rerank.log'
 alias rag='bash /path/to/rag-system/server/search_vault.sh --no-rerank'
 alias ragr='bash /path/to/rag-system/server/search_vault.sh'
+alias rc='curl -s http://127.0.0.1:8182/health | jq .'
+alias rsk='pkill -f rag_server_rerank'
 ```
 
 ### Troubleshooting installation
@@ -745,7 +870,44 @@ rs
 
 ## 8. Quick Usage Guide
 
-See `doc/00 Quick Start Guide.md` for the condensed version.
+See `doc/english/00 Quick Start Guide.md` for the condensed version.
+
+### Search examples
+
+```bash
+# Fast search (~20ms)
+rag void "nftables configuration"
+
+# Slow and precise search with reranker (~10-18s CPU, ~1s GPU)
+ragr void "nftables configuration"
+
+# Search a specific vault
+rag linux "dracut hooks"
+
+# Search all vaults at once
+ragr all "your query"
+
+# Search all Obsidian vaults
+ragr obsidian "your query"
+```
+
+### Health check
+
+```bash
+rc
+```
+
+### Monitor logs
+
+```bash
+rst
+```
+
+### Stop the RAG server
+
+```bash
+rsk
+```
 
 ---
 
@@ -824,6 +986,16 @@ Requires `transformers` installed: `$VENV_PYTHON -m pip install transformers`
 ---
 
 ## 10. Cleanup
+
+### Full Uninstall
+
+```bash
+bash uninstall.sh
+```
+
+The uninstaller stops running services, removes shell aliases, and optionally removes the repo, models, cache, and venv. It does NOT remove your Obsidian vaults or documentation.
+
+Test without modifying anything: `bash uninstall.sh --dry-run`
 
 ### Delete Cache (Full Re-indexing)
 
