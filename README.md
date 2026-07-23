@@ -1152,10 +1152,10 @@ A: Official Qwen3 blog says: "The Embedding model processes a single text segmen
 
 ## Recommended System
 
-Void Linux with niri desktop
-faster boot, 1GB RAM occupied only, fastest and whole package manager
-system.d free, runit instead wich is faster, lighter and private. 
-perfect balance between security and fluidity
+Void Linux with niri desktop.
+Faster boot, 1GB RAM occupied only, fastest and whole package manager.
+System.d free, runit instead wich is faster, lighter and private. 
+Perfect balance between security and fluidity
 
 ## Licence                                                                                                                                                                          
 

@@ -1152,10 +1152,10 @@ R : Le blog officiel Qwen3 dit : "Le modèle d'Embedding traite un seul segment 
 
 ## Système Recommandé
 
-Void Linux avec niri desktop
-faster boot, occupe seulement 1Go RAM, gestionnaire de packages rapide et complet
-pas de system.d mais runit qui est bien plus léger, rapide et confidentiel. 
-excellent équilibre entre sécurité et fluidité
+Void Linux avec niri desktop.
+Faster boot, occupe seulement 1Go RAM, gestionnaire de packages rapide et complet.
+Pas de system.d mais runit qui est bien plus léger, rapide et confidentiel. 
+Excellent équilibre entre sécurité et fluidité.
 
 ## Licence                                                                                                                                                                          
 
