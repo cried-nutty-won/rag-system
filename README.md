@@ -1,3 +1,5 @@
+[Fr](README.fr.md)
+---
 # RAG Hybrid + Reranker
 
 # introduction
