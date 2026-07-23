@@ -193,6 +193,7 @@ The 0.6B is sufficient for a local RAG with reranker. The 4B adds +5 points but 
 git clone https://github.com/cried-nutty-won/rag-system.git
 cd rag-system
 bash install.sh
+```
 
 The interactive installer handles everything:
 - Detects OS, RAM, GPU (NVIDIA, Apple Silicon, lspci)
