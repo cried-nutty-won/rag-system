@@ -119,6 +119,21 @@ echo -e "    • Qwen3 embedding + reranker models (GGUF)"
 echo -e "    • Shell aliases (10 shortcuts)"
 echo ""
 
+# ── Check repo location ────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+EXPECTED_DIR="${HOME}/rag/rag-system"
+if [[ "$SCRIPT_DIR" != "$EXPECTED_DIR" ]]; then
+    warn "rag-system is at: ${SCRIPT_DIR}"
+    warn "Expected location: ${EXPECTED_DIR}"
+    ask_yes_no "Move to ${EXPECTED_DIR}?" "y" MOVE_REPO
+    if [[ "$MOVE_REPO" == true ]]; then
+        run mkdir -p "${HOME}/rag"
+        run mv "$SCRIPT_DIR" "$EXPECTED_DIR"
+        success "Moved to ${EXPECTED_DIR}"
+        exec "${EXPECTED_DIR}/install.sh" "$@"
+    fi
+fi
+
 # ── Step 1: System detection ───────────────────────────────
 header "Step 1/9: System detection"
 

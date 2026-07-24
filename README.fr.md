@@ -194,8 +194,9 @@ Le 0.6B est suffisant pour un RAG local avec reranker. Le 4B ajoute +5 points ma
 ### Installation Rapide (recommandée)
 
 ```bash
+mkdir -p ~/rag
 git clone https://github.com/cried-nutty-won/rag-system.git
-cd rag-system
+cd ~/rag/rag-system
 bash install.sh
 ```
 
