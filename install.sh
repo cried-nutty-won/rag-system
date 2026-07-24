@@ -304,33 +304,26 @@ header "Step 5/9: Download models"
 
 run mkdir -p "$GGUF_DIR"
 
-# Check huggingface-cli
-if ! check_command huggingface-cli; then
-    warn "huggingface-cli not found. Installing..."
-    run "${VENV_DIR}/bin/pip" install --quiet huggingface_hub[cli]
-    HF_CLI="${VENV_DIR}/bin/huggingface-cli"
+# Détecter la commande disponible
+if command -v hf &> /dev/null; then
+    HF_CMD="hf download"
+elif command -v huggingface-cli &> /dev/null; then
+    HF_CMD="huggingface-cli download"
 else
-    HF_CLI="huggingface-cli"
+    echo "[ERROR] Ni 'hf' ni 'huggingface-cli' trouvé."
+    echo "  Installer: pip install -U huggingface-hub"
+    exit 1
 fi
 
-# Embedding model
-if [[ -f "${GGUF_DIR}/${EMBED_FILE}" ]]; then
-    success "Embedding model already present: ${EMBED_FILE}"
-else
-    info "Downloading embedding model: ${EMBED_MODEL} (${EMBED_SIZE})..."
-    run "$HF_CLI" download "$EMBED_HF" "$EMBED_FILE" --local-dir "$GGUF_DIR"
-    success "Embedding model downloaded"
-fi
+# Embedding
+echo "[INFO] Downloading embedding model..."
+$HF_CMD Qwen/Qwen3-Embedding-0.6B-GGUF \
+  Qwen3-Embedding-0.6B-Q8_0.gguf --local-dir "$GGUF_DIR"
 
-# Reranker model
-if [[ -f "${GGUF_DIR}/${RERANK_FILE}" ]]; then
-    success "Reranker model already present: ${RERANK_FILE}"
-else
-    info "Downloading reranker model: ${RERANK_MODEL} (${RERANK_SIZE})..."
-    info "Source: Voodisss (mandatory — community GGUFs are broken)"
-    run "$HF_CLI" download "$RERANK_HF" "$RERANK_FILE" --local-dir "$GGUF_DIR"
-    success "Reranker model downloaded"
-fi
+# Reranker
+echo "[INFO] Downloading reranker model..."
+$HF_CMD Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp \
+  Qwen3-Reranker-0.6B-Q4_K_M.gguf --local-dir "$GGUF_DIR"
 
 # ── Step 6: Configure rag-system ───────────────────────────
 header "Step 6/9: Configure rag-system"
