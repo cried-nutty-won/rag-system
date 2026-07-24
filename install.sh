@@ -296,7 +296,7 @@ else
 fi
 
 info "Installing Python dependencies (numpy, requests, rank_bm25)..."
-run "${VENV_DIR}/bin/pip" install --quiet numpy requests rank_bm25
+run "${VENV_DIR}/bin/pip" install --quiet numpy requests rank_bm25 huggingface-hub
 success "Python dependencies installed"
 
 # ── Step 5: Download models ────────────────────────────────
@@ -304,15 +304,25 @@ header "Step 5/9: Download models"
 
 run mkdir -p "$GGUF_DIR"
 
-# Détecter la commande disponible
-if command -v hf &> /dev/null; then
+# Détecter la commande disponible (venv d'abord, puis PATH)
+if [[ -x "${VENV_DIR}/bin/hf" ]]; then
+    HF_CMD="${VENV_DIR}/bin/hf download"
+elif command -v hf &> /dev/null; then
     HF_CMD="hf download"
+elif [[ -x "${VENV_DIR}/bin/huggingface-cli" ]]; then
+    HF_CMD="${VENV_DIR}/bin/huggingface-cli download"
 elif command -v huggingface-cli &> /dev/null; then
     HF_CMD="huggingface-cli download"
 else
-    echo "[ERROR] Ni 'hf' ni 'huggingface-cli' trouvé."
-    echo "  Installer: pip install -U huggingface-hub"
-    exit 1
+    error "Ni 'hf' ni 'huggingface-cli' trouvé."
+    info "Installation de huggingface-hub dans le venv..."
+    run "${VENV_DIR}/bin/pip" install --quiet huggingface-hub
+    if [[ -x "${VENV_DIR}/bin/hf" ]]; then
+        HF_CMD="${VENV_DIR}/bin/hf download"
+    else
+        error "Échec de l'installation de huggingface-hub"
+        exit 1
+    fi
 fi
 
 # Embedding
