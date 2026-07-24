@@ -92,7 +92,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 RAG_DIR="$SCRIPT_DIR"
 
 # Load config
-GGUF_DIR="${HOME}/models/GGUF/rag"
+GGUF_DIR="${HOME}/rag/models/GGUF"
 VENV_DIR="${HOME}/.venv/main"
 CACHE_DIR="${HOME}/.rag"
 if [[ -f "${RAG_DIR}/config.sh" ]]; then
