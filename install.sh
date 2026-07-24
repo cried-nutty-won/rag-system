@@ -382,7 +382,7 @@ while true; do
     if [[ -d "$default_path" ]]; then
         while IFS= read -r -d '' dir; do
             DIRS_FOUND+=("$dir")
-        done < <(find "$default_path" -maxdepth 1 -mindepth 1 -type d ! -name '.*' -print0 | sort -z)
+        done < <(find -L "$default_path" -maxdepth 1 -mindepth 1 -type d ! -name '.*' -print0 | sort -z)
     fi
 
     if [[ ${#DIRS_FOUND[@]} -gt 0 ]]; then
