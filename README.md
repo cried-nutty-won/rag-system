@@ -157,6 +157,8 @@ export LLAMA_EMBED_URL="http://127.0.0.1:11434/api/embeddings"
 - Embedding: [Qwen/Qwen3-Embedding-0.6B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF) or [Qwen/Qwen3-Embedding-4B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-4B-GGUF) (official)
 - Reranker: [Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp) or [Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp) (**mandatory** — community GGUFs are broken, see [llama.cpp #16407](https://github.com/ggml-org/llama.cpp/issues/16407))
 
+> **Note:** The MTEB scores of the embedding and reranker models are **not comparable** — they evaluate different tasks (vector retrieval vs. pair re-ranking). The actual pipeline gain from adding the reranker is **+12 NDCG@10 points** (FinanceQA benchmark), not the difference between the two MTEB scores above.
+
 ### MTEB (Massive Text Embedding Benchmark)
 
 MTEB is the reference benchmark for evaluating embedding model quality. It measures a model's ability to produce vectors that capture text meaning, across **8 task types**:
