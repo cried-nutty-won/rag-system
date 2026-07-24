@@ -154,10 +154,10 @@ export LLAMA_EMBED_URL="http://127.0.0.1:11434/api/embeddings"
 | Qwen3-Reranker-0.6B | Q4_K_M | 379 Mo | CPU ou GPU | 65.80 |
 | Qwen3-Reranker-4B | Q4_K_M | 2.4 Go | GPU recommandé | 69.76 |
 
+> **Note :** Les scores MTEB de l'embedding et du reranker ne sont **pas comparables** — ils évaluent des tâches différentes (récupération vectorielle vs. reclassement de paires). Le gain réel du reranker dans le pipeline est de **+12 points NDCG@10** (benchmark FinanceQA), pas la différence entre les deux scores MTEB ci-dessus.
+
 - Embedding : [Qwen/Qwen3-Embedding-0.6B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF) ou [Qwen/Qwen3-Embedding-4B-GGUF](https://huggingface.co/Qwen/Qwen3-Embedding-4B-GGUF) (officiel)
 - Reranker : [Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp) ou [Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp](https://huggingface.co/Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp) (**obligatoire** — les GGUF communautaires sont cassés, voir [llama.cpp #16407](https://github.com/ggml-org/llama.cpp/issues/16407))
-
-> **Note :** Les scores MTEB de l'embedding et du reranker ne sont **pas comparables** — ils évaluent des tâches différentes (récupération vectorielle vs. reclassement de paires). Le gain réel du reranker dans le pipeline est de **+12 points NDCG@10** (benchmark FinanceQA), pas la différence entre les deux scores MTEB ci-dessus.
 
 ### MTEB (Massive Text Embedding Benchmark)
 
